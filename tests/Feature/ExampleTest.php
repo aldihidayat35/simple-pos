@@ -15,5 +15,13 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
+        $response->assertSee('navIndicator');
+        $response->assertSee('mobileNavIndicator');
+        $response->assertSee('id="page-0"', false);
+        $response->assertSee('id="page-1"', false);
+        $response->assertSee('id="page-2"', false);
+        $response->assertSee('id="page-3"', false);
+        $response->assertSee('id="page-4"', false);
+        $response->assertSee('id="page-5"', false);
     }
 }

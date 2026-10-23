@@ -1,4 +1,4 @@
-<!-- ==========================================================
+﻿<!-- ==========================================================
      FIXED HEADER (Clean borderless header, does not move when scrolling)
      Contains: Contextual Sub-Menus (Mobile Dropdown & Desktop Pills) + Right Profile & Language Switcher
      ========================================================== -->
@@ -7,37 +7,36 @@
   <!-- Left Header: Mobile Hamburger Dropdown + Desktop Dynamic Pill Bar -->
   <div class="flex items-center gap-2">
     
-    <!-- Active Module Breadcrumb Navigation Bar -->
-    <div class="inline-flex items-center gap-1.5 bg-panelBg px-3 py-1.5 rounded-xl text-xs font-semibold text-textMuted border border-[#E8E6F2]">
-      @if(request()->routeIs('dashboard'))
-        <span class="w-2 h-2 rounded-full bg-brandOrange"></span>
-        <span class="font-bold text-textMain">Dasbor Utama</span>
-      @elseif(request()->routeIs('products.*'))
-        <a href="{{ route('products.index') }}" class="font-bold text-sidebar">Master Produk</a>
-        <span class="text-textMuted">/</span>
-        <a href="{{ route('suppliers.index') }}" class="text-textMuted hover:text-sidebar">Suplayer</a>
-      @elseif(request()->routeIs('suppliers.*'))
-        <a href="{{ route('products.index') }}" class="text-textMuted hover:text-sidebar">Master Produk</a>
-        <span class="text-textMuted">/</span>
-        <a href="{{ route('suppliers.index') }}" class="font-bold text-sidebar">Suplayer</a>
-      @elseif(request()->routeIs('warehouse.*'))
-        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-        <span class="font-bold text-textMain">Gudang Pusat & Inbound PO</span>
-      @elseif(request()->routeIs('pos.*'))
-        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-        <span class="font-bold text-textMain">Operasional Toko & Kasir POS</span>
-      @elseif(request()->routeIs('b2b.*'))
-        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-        <span class="font-bold text-textMain">Kemitraan B2B & Plafon Piutang</span>
-      @elseif(request()->routeIs('audit.*'))
-        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-        <span class="font-bold text-textMain">Audit Trail & Rekam Jejak</span>
-      @elseif(request()->routeIs('admin.*'))
-        <span class="w-2 h-2 rounded-full bg-brandOrange"></span>
-        <span class="font-bold text-textMain">Panel Super Admin</span>
-      @else
-        <span class="font-bold text-textMain">Sistem Operasional Pasar</span>
-      @endif
+    <!-- MOBILE ONLY: 3-Lines Hamburger Button with Animated Popup Dropdown -->
+    <div class="relative md:hidden" id="mobileMenuWrapper">
+      <button id="mobileMenuBtn" onclick="toggleMobileSubMenu(event)" class="min-h-[44px] flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-panelBg hover:bg-[#EAE8F2] text-sidebar transition border border-[#E6E4F0]" aria-label="Menu Sub-Modul">
+        <!-- 3-Lines Hamburger Icon -->
+        <svg id="hamburgerIcon" class="w-4 h-4 text-sidebar shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <span id="mobileActiveSubMenuLabel" class="text-xs font-bold text-sidebar max-w-[130px] truncate">
+          Ringkasan Operasional
+        </span>
+        <!-- Small chevron indicator -->
+        <svg id="mobileMenuChevron" class="w-3.5 h-3.5 text-textMuted transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <!-- Mobile Sub-Menu Popup Dropdown with Animation -->
+      <div id="mobileSubMenuDropdown" class="hidden absolute left-0 top-full mt-2 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#E8E6F2] p-2 z-50 transform origin-top-left transition-all duration-200 scale-95 opacity-0">
+        <div class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-textMuted uppercase border-b border-[#F0EFF6] mb-1" data-i18n="header_sub_menu_title">
+          Sub-Modul Operasional
+        </div>
+        <div id="mobileSubMenuList" class="flex flex-col gap-1">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP ONLY: Dynamic Contextual Sub-Menu Pill Bar -->
+    <div id="subMenuContainer" class="hidden md:inline-flex flex-wrap items-center gap-1 bg-panelBg p-1 rounded-xl text-[11px] font-semibold text-textMuted">
+      <!-- Populated dynamically by JS based on current module -->
     </div>
 
   </div>
@@ -56,7 +55,7 @@
     </div>
 
     <!-- Live Color Codes Quick Legend Pill (PRD Movement Color Standard) -->
-    <a href="{{ route('audit.index') }}" title="Lihat Standar 5 Indikator Warna Pergerakan" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-panelBg hover:bg-[#EAE8F2] text-sidebar transition border border-[#E6E4F0] text-xs font-bold">
+    <button onclick="switchPage(4)" title="Lihat Standar 5 Indikator Warna Pergerakan" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-panelBg hover:bg-[#EAE8F2] text-sidebar transition border border-[#E6E4F0] text-xs font-bold">
       <span class="flex items-center gap-1">
         <span class="w-2 h-2 rounded-full bg-moveGreen"></span>
         <span class="w-2 h-2 rounded-full bg-moveBlue"></span>
@@ -65,7 +64,7 @@
         <span class="w-2 h-2 rounded-full bg-moveRed"></span>
       </span>
       <span class="hidden md:inline" data-i18n="header_color_legend">Warna Pergerakan</span>
-    </a>
+    </button>
 
     @if(auth()->check() && auth()->user()->isReadOnly())
       <!-- Owner Read-Only Indicator Badge -->

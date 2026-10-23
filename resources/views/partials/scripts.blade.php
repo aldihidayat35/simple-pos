@@ -664,6 +664,12 @@
   }
 
   function switchPage(index) {
+    const targetPage = document.getElementById(`page-${index}`);
+    if (!targetPage) {
+      window.location.href = `/?page=${index}`;
+      return;
+    }
+
     currentModuleIndex = index;
     currentSubMenuIndex = 0;
 
@@ -817,5 +823,15 @@
     renderSubMenus();
     renderMovementStream();
     renderBarChart();
+
+    // Check URL parameters for page navigation (e.g. ?page=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    if (pageParam !== null) {
+      const pageIdx = parseInt(pageParam);
+      if (!isNaN(pageIdx) && pageIdx >= 0 && pageIdx <= 5) {
+        switchPage(pageIdx);
+      }
+    }
   });
 </script>
