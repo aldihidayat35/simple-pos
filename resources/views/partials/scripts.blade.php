@@ -546,20 +546,96 @@
     const mobileList = document.getElementById('mobileSubMenuList');
     const mobileLabel = document.getElementById('mobileActiveSubMenuLabel');
     const list = moduleSubMenus[currentModuleIndex] || [];
+    const MAX_VISIBLE = 3;
 
     if (container) {
       container.innerHTML = '';
-      list.forEach((sub, idx) => {
-        const btn = document.createElement('button');
-        const isActive = idx === currentSubMenuIndex;
-        const labelText = sub.label[currentLang] || sub.label.id;
-        btn.onclick = () => selectSubMenu(idx);
-        btn.className = isActive
-          ? 'px-3 py-1 rounded-lg bg-white text-sidebar font-bold border border-[#E6E4F0] shadow-sm transition'
-          : 'px-3 py-1 rounded-lg text-textMuted hover:text-textMain transition';
-        btn.innerText = labelText;
-        container.appendChild(btn);
-      });
+
+      if (list.length <= MAX_VISIBLE) {
+        list.forEach((sub, idx) => {
+          const btn = document.createElement('button');
+          const isActive = idx === currentSubMenuIndex;
+          const labelText = sub.label[currentLang] || sub.label.id;
+          btn.onclick = () => selectSubMenu(idx);
+          btn.className = isActive
+            ? 'px-3 py-1.5 rounded-lg bg-white text-sidebar font-bold border border-[#E6E4F0] shadow-sm transition whitespace-nowrap'
+            : 'px-3 py-1.5 rounded-lg text-textMuted hover:text-textMain transition whitespace-nowrap';
+          btn.innerText = labelText;
+          container.appendChild(btn);
+        });
+      } else {
+        // Render first 3 items directly
+        for (let idx = 0; idx < MAX_VISIBLE; idx++) {
+          const sub = list[idx];
+          const btn = document.createElement('button');
+          const isActive = idx === currentSubMenuIndex;
+          const labelText = sub.label[currentLang] || sub.label.id;
+          btn.onclick = () => selectSubMenu(idx);
+          btn.className = isActive
+            ? 'px-3 py-1.5 rounded-lg bg-white text-sidebar font-bold border border-[#E6E4F0] shadow-sm transition whitespace-nowrap'
+            : 'px-3 py-1.5 rounded-lg text-textMuted hover:text-textMain transition whitespace-nowrap';
+          btn.innerText = labelText;
+          container.appendChild(btn);
+        }
+
+        // Render Dropdown for items index >= 3
+        const isOverflowActive = currentSubMenuIndex >= MAX_VISIBLE;
+        const activeSubObj = isOverflowActive ? list[currentSubMenuIndex] : null;
+        const activeLabel = activeSubObj 
+          ? (activeSubObj.label[currentLang] || activeSubObj.label.id) 
+          : (currentLang === 'id' ? 'Lainnya' : 'More');
+
+        const moreWrapper = document.createElement('div');
+        moreWrapper.className = 'relative inline-block';
+        moreWrapper.id = 'desktopSubMenuMoreWrapper';
+
+        const moreBtn = document.createElement('button');
+        moreBtn.id = 'desktopSubMenuMoreBtn';
+        moreBtn.onclick = (e) => toggleDesktopSubMenuMore(e);
+        moreBtn.className = isOverflowActive
+          ? 'px-3 py-1.5 rounded-lg bg-white text-sidebar font-bold border border-[#E6E4F0] shadow-sm transition inline-flex items-center gap-1.5 whitespace-nowrap'
+          : 'px-2.5 py-1.5 rounded-lg text-textMuted hover:text-textMain transition inline-flex items-center gap-1 whitespace-nowrap';
+
+        moreBtn.innerHTML = `
+          ${isOverflowActive ? '<span class="w-2 h-2 rounded-full bg-brandOrange shrink-0"></span>' : ''}
+          <span class="max-w-[130px] truncate text-[11px]">${activeLabel}</span>
+          <svg id="desktopMoreChevron" class="w-3.5 h-3.5 text-current transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        `;
+        moreWrapper.appendChild(moreBtn);
+
+        const moreDropdown = document.createElement('div');
+        moreDropdown.id = 'desktopSubMenuMoreDropdown';
+        moreDropdown.className = 'hidden absolute right-0 top-full mt-2 w-60 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#E8E6F2] p-2 z-50 transform origin-top-right transition-all duration-200 scale-95 opacity-0';
+
+        const moreList = document.createElement('div');
+        moreList.className = 'flex flex-col gap-1';
+
+        for (let i = MAX_VISIBLE; i < list.length; i++) {
+          const sub = list[i];
+          const isItemActive = i === currentSubMenuIndex;
+          const itemBtn = document.createElement('button');
+          const itemLabel = sub.label[currentLang] || sub.label.id;
+          itemBtn.onclick = (e) => {
+            e.stopPropagation();
+            selectSubMenu(i);
+            closeDesktopSubMenuMore();
+          };
+          itemBtn.className = isItemActive
+            ? 'flex items-center justify-between w-full px-3 py-2 rounded-xl bg-panelBg text-sidebar font-bold text-xs transition border border-[#E6E4F0]'
+            : 'flex items-center justify-between w-full px-3 py-2 rounded-xl text-textMuted hover:text-textMain hover:bg-[#FAF9FD] text-xs transition';
+          itemBtn.innerHTML = `
+            <span class="truncate">${itemLabel}</span>
+            ${isItemActive ? '<span class="w-2 h-2 rounded-full bg-brandOrange shrink-0"></span>' : ''}
+          `;
+          moreList.appendChild(itemBtn);
+        }
+
+        moreDropdown.appendChild(moreList);
+        moreWrapper.appendChild(moreDropdown);
+        container.appendChild(moreWrapper);
+      }
     }
 
     if (mobileList) {
@@ -584,6 +660,38 @@
     if (mobileLabel && list[currentSubMenuIndex]) {
       mobileLabel.innerText = list[currentSubMenuIndex].label[currentLang] || list[currentSubMenuIndex].label.id;
     }
+  }
+
+  function toggleDesktopSubMenuMore(e) {
+    if (e) e.stopPropagation();
+    const dropdown = document.getElementById('desktopSubMenuMoreDropdown');
+    const chevron = document.getElementById('desktopMoreChevron');
+    if (!dropdown) return;
+
+    const isHidden = dropdown.classList.contains('hidden');
+    if (isHidden) {
+      dropdown.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        dropdown.classList.remove('scale-95', 'opacity-0');
+        dropdown.classList.add('scale-100', 'opacity-100');
+      });
+      if (chevron) chevron.classList.add('rotate-180');
+    } else {
+      closeDesktopSubMenuMore();
+    }
+  }
+
+  function closeDesktopSubMenuMore() {
+    const dropdown = document.getElementById('desktopSubMenuMoreDropdown');
+    const chevron = document.getElementById('desktopMoreChevron');
+    if (!dropdown || dropdown.classList.contains('hidden')) return;
+
+    dropdown.classList.remove('scale-100', 'opacity-100');
+    dropdown.classList.add('scale-95', 'opacity-0');
+    if (chevron) chevron.classList.remove('rotate-180');
+    setTimeout(() => {
+      dropdown.classList.add('hidden');
+    }, 200);
   }
 
   function toggleMobileSubMenu(e) {
@@ -619,9 +727,13 @@
   }
 
   document.addEventListener('click', (e) => {
-    const wrapper = document.getElementById('mobileMenuWrapper');
-    if (wrapper && !wrapper.contains(e.target)) {
+    const mobileWrapper = document.getElementById('mobileMenuWrapper');
+    if (mobileWrapper && !mobileWrapper.contains(e.target)) {
       closeMobileSubMenu();
+    }
+    const desktopWrapper = document.getElementById('desktopSubMenuMoreWrapper');
+    if (desktopWrapper && !desktopWrapper.contains(e.target)) {
+      closeDesktopSubMenuMore();
     }
   });
 
