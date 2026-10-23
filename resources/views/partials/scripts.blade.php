@@ -501,7 +501,21 @@
   // ============================================================
   // 4. NAVIGATION, LIQUID CURVE ANIMATION & SUB-MENUS
   // ============================================================
-  let currentModuleIndex = 0; // Default active module: Page 0
+  @php
+    $currentRouteModule = 0;
+    if (request()->routeIs('warehouse.*')) {
+        $currentRouteModule = 1;
+    } elseif (request()->routeIs('pos.*')) {
+        $currentRouteModule = 2;
+    } elseif (request()->routeIs('b2b.*')) {
+        $currentRouteModule = 3;
+    } elseif (request()->routeIs('audit.*')) {
+        $currentRouteModule = 4;
+    } elseif (request()->routeIs('products.*') || request()->routeIs('suppliers.*')) {
+        $currentRouteModule = 5;
+    }
+  @endphp
+  let currentModuleIndex = {{ $currentRouteModule }};
   let currentSubMenuIndex = 0;
 
   const moduleSubMenus = {
@@ -775,62 +789,20 @@
     }
   }
 
+  const routeMap = {
+    0: '{{ route("dashboard") }}',
+    1: '{{ route("warehouse.index") }}',
+    2: '{{ route("pos.index") }}',
+    3: '{{ route("b2b.index") }}',
+    4: '{{ route("audit.index") }}',
+    5: '{{ route("products.index") }}',
+    6: '{{ route("admin.users") }}'
+  };
+
   function switchPage(index) {
-    const targetPage = document.getElementById(`page-${index}`);
-    if (!targetPage) {
-      window.location.href = `/?page=${index}`;
-      return;
+    if (routeMap[index]) {
+      window.location.href = routeMap[index];
     }
-
-    currentModuleIndex = index;
-    currentSubMenuIndex = 0;
-
-    // Update desktop sidebar buttons
-    const buttons = document.querySelectorAll('#sidebarNav .sidebar-btn');
-    buttons.forEach((btn, idx) => {
-      if (idx === index) btn.classList.add('active');
-      else btn.classList.remove('active');
-    });
-
-    // Update mobile bottom nav buttons
-    const mobileButtons = document.querySelectorAll('#mobileNav .mobile-nav-btn');
-    mobileButtons.forEach((btn, idx) => {
-      if (idx === index) btn.classList.add('active');
-      else btn.classList.remove('active');
-    });
-
-    // Animate desktop liquid curve indicator (68px step)
-    const indicator = document.getElementById('navIndicator');
-    if (indicator) {
-      const stepY = index * 68;
-      indicator.style.transform = `translateY(${stepY}px)`;
-    }
-
-    // Animate mobile liquid curve indicator (horizontal step)
-    const mobileIndicator = document.getElementById('mobileNavIndicator');
-    if (mobileIndicator) {
-      mobileIndicator.style.transform = `translateX(calc(${index} * 100%))`;
-    }
-
-    // Show selected page container and hide others
-    for (let i = 0; i < 6; i++) {
-      const pageEl = document.getElementById(`page-${i}`);
-      if (pageEl) {
-        if (i === index) {
-          pageEl.classList.remove('hidden');
-          pageEl.style.animation = 'none';
-          pageEl.offsetHeight; // trigger reflow
-          pageEl.style.animation = null;
-        } else {
-          pageEl.classList.add('hidden');
-        }
-      }
-    }
-
-    selectSubMenu(0);
-
-    const scroller = document.getElementById('scrollableWorkspace');
-    if (scroller) scroller.scrollTop = 0;
   }
 
   // ============================================================
@@ -935,15 +907,5 @@
     renderSubMenus();
     renderMovementStream();
     renderBarChart();
-
-    // Check URL parameters for page navigation (e.g. ?page=5)
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get('page');
-    if (pageParam !== null) {
-      const pageIdx = parseInt(pageParam);
-      if (!isNaN(pageIdx) && pageIdx >= 0 && pageIdx <= 5) {
-        switchPage(pageIdx);
-      }
-    }
   });
 </script>
