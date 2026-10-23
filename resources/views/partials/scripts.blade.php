@@ -97,7 +97,23 @@
       p4_card3_sub: 'Kunci Otomatis Kasir POS & Pengunci Piutang B2B Bekerja 100%',
       p4_board_title: 'Tabel Pertanggungjawaban Langsung Akun',
       p4_board_sub: 'Daftar eksekusi krusial tanpa approval yang mengikat identitas operator secara permanen',
-      p4_audit_tag: 'Audit Trail RBAC'
+      p4_audit_tag: 'Audit Trail RBAC',
+
+      // Page 5 Fase 3 strings
+      p5_badge: 'Fase 3 • Master Data Pasar',
+      p5_title: 'Master Produk, Konversi Satuan & Suplayer',
+      p5_subtitle: 'Pencegahan duplikasi SKU dengan analisis kemiripan teks (Fuzzy Matching ≥ 75%) & konversi satuan bertingkat (Karung/Dus → Kg/Pcs).',
+      p5_btn_readonly: 'Mode Read-Only',
+      p5_btn_add_supplier: '+ Suplayer Baru',
+      p5_btn_add_product: '+ Tambah Produk',
+      p5_tab_products: 'Katalog Master Produk',
+      p5_tab_suppliers: 'Daftar Suplayer Resmi',
+      p5_filter_cat: 'Kategori:',
+      p5_cat_all: 'Semua Kategori',
+      p5_search_placeholder: 'Cari nama, SKU, atau barcode...',
+      p5_no_products: 'Belum ada data master produk.',
+      p5_sup_title: 'Mitra Suplayer Terdaftar',
+      p5_sup_subtitle: 'Pemasok resmi barang masuk gudang dan belanja darurat (Stok Emergency) toko'
     },
     en: {
       app_title: 'PasarHub — Unified Market Management System',
@@ -184,7 +200,23 @@
       p4_card3_sub: 'Automated Cashier POS Lock & B2B Debt Blocker Working 100%',
       p4_board_title: 'Account Direct Responsibility Board',
       p4_board_sub: 'List of crucial operations executed without approval binding operator identities permanently',
-      p4_audit_tag: 'RBAC Audit Trail'
+      p4_audit_tag: 'RBAC Audit Trail',
+
+      // Page 5 Fase 3 strings
+      p5_badge: 'Phase 3 • Market Master Data',
+      p5_title: 'Product Master, Multi-UOM & Suppliers',
+      p5_subtitle: 'Prevent duplicate SKUs with text similarity analysis (Fuzzy Matching ≥ 75%) & tiered unit conversions (Sack/Box → Kg/Pcs).',
+      p5_btn_readonly: 'Read-Only Mode',
+      p5_btn_add_supplier: '+ New Supplier',
+      p5_btn_add_product: '+ Add Product',
+      p5_tab_products: 'Product Catalog',
+      p5_tab_suppliers: 'Official Suppliers Directory',
+      p5_filter_cat: 'Category:',
+      p5_cat_all: 'All Categories',
+      p5_search_placeholder: 'Search name, SKU, or barcode...',
+      p5_no_products: 'No product master data yet.',
+      p5_sup_title: 'Registered Supplier Partners',
+      p5_sup_subtitle: 'Official inbound suppliers for warehouse and store emergency purchases'
     }
   };
 
@@ -219,6 +251,14 @@
       const key = el.getAttribute('data-i18n-title');
       if (i18n[lang] && i18n[lang][key]) {
         el.title = i18n[lang][key];
+      }
+    });
+
+    // Translate input placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (i18n[lang] && i18n[lang][key]) {
+        el.placeholder = i18n[lang][key];
       }
     });
 
@@ -496,8 +536,8 @@
     ],
     5: [
       { label: { id: 'Master Produk & Satuan', en: 'Products & Multi-UOM' }, desc: { id: 'Fuzzy matching 75% pencegah produk ganda', en: '75% fuzzy matching anti-duplicate' } },
-      { label: { id: 'Kartu Member QR', en: 'Member QR Cards' }, desc: { id: 'QR & Barcode pelanggan ritel & B2B', en: 'QR & Barcode for retail & B2B members' } },
-      { label: { id: 'Parameter System Lock', en: 'System Lock Parameters' }, desc: { id: 'Batas floor price & plafon kredit', en: 'Floor price bounds & credit limit rules' } }
+      { label: { id: 'Daftar Suplayer', en: 'Suppliers Directory' }, desc: { id: 'Pemasok resmi barang masuk gudang & toko', en: 'Official suppliers for warehouse & store' } },
+      { label: { id: 'Kartu Member QR', en: 'Member QR Cards' }, desc: { id: 'QR & Barcode pelanggan ritel & B2B', en: 'QR & Barcode for retail & B2B members' } }
     ]
   };
 
@@ -613,6 +653,13 @@
       else if (subIdx === 2) filterMovementStream('blue');
       else if (subIdx === 3) filterMovementStream('purple');
       else if (subIdx === 4) filterMovementStream('red');
+    }
+
+    // Module 5 (Master Products & Suppliers Tab Control)
+    if (currentModuleIndex === 5) {
+      if (subIdx === 0 && typeof switchProductTab === 'function') switchProductTab('tabProducts');
+      else if (subIdx === 1 && typeof switchProductTab === 'function') switchProductTab('tabSuppliers');
+      else if (subIdx === 2 && typeof simulateScanQR === 'function') simulateScanQR();
     }
   }
 
