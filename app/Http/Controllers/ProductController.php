@@ -95,14 +95,19 @@ class ProductController extends Controller
 
         // Simpan satuan bertingkat (Multi-UOM) jika ada
         if (!empty($validated['units'])) {
+            $unitIndex = 1;
             foreach ($validated['units'] as $unitData) {
                 if (!empty($unitData['uom_name']) && !empty($unitData['conversion_factor'])) {
+                    $slugName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $unitData['uom_name'])) ?: ('U' . $unitIndex);
+                    $unitBarcode = !empty($unitData['barcode']) ? $unitData['barcode'] : ($product->sku . '-' . $slugName);
+
                     $product->units()->create([
                         'uom_name'          => $unitData['uom_name'],
                         'conversion_factor' => $unitData['conversion_factor'],
                         'selling_price'     => $unitData['selling_price'] ?? null,
-                        'barcode'           => $unitData['barcode'] ?? null,
+                        'barcode'           => $unitBarcode,
                     ]);
+                    $unitIndex++;
                 }
             }
         }
@@ -158,14 +163,19 @@ class ProductController extends Controller
         // Sync satuan bertingkat (Multi-UOM)
         if (isset($validated['units'])) {
             $product->units()->delete();
+            $unitIndex = 1;
             foreach ($validated['units'] as $unitData) {
                 if (!empty($unitData['uom_name']) && !empty($unitData['conversion_factor'])) {
+                    $slugName = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $unitData['uom_name'])) ?: ('U' . $unitIndex);
+                    $unitBarcode = !empty($unitData['barcode']) ? $unitData['barcode'] : ($product->sku . '-' . $slugName);
+
                     $product->units()->create([
                         'uom_name'          => $unitData['uom_name'],
                         'conversion_factor' => $unitData['conversion_factor'],
                         'selling_price'     => $unitData['selling_price'] ?? null,
-                        'barcode'           => $unitData['barcode'] ?? null,
+                        'barcode'           => $unitBarcode,
                     ]);
+                    $unitIndex++;
                 }
             }
         }
