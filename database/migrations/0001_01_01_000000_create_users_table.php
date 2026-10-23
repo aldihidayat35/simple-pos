@@ -14,9 +14,18 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('username')->unique();
+            $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role', 30)->default('STAF_TOKO')->index(); // SUPER_ADMIN, OWNER, KEPALA_TOKO, KEPALA_GUDANG, STAF_GUDANG, STAF_TOKO, SALES, B2B
+            $table->string('location_id', 50)->default('TOKO_SENTRAL'); // GUDANG_PUSAT, TOKO_SENTRAL, MITRA_B2B
+            $table->string('phone', 30)->nullable();
+            $table->string('preferred_lang', 5)->default('id'); // id, en
+            $table->json('permissions_json')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('last_login_at')->nullable();
+            $table->string('last_login_ip', 45)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

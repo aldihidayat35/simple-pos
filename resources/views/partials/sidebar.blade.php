@@ -65,6 +65,15 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
       </svg>
     </button>
+
+    @if(auth()->check() && auth()->user()->isSuperAdmin())
+      <!-- Menu 6: Panel Super Admin -->
+      <a href="{{ route('admin.users') }}" title="Panel Super Admin (Pengguna & Konfigurasi)" class="sidebar-btn min-h-[48px] {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+        <svg class="w-5 h-5 text-brandOrange" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+      </a>
+    @endif
   </nav>
 
   <!-- Bottom Shift / Exit Button -->

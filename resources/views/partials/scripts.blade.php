@@ -453,7 +453,9 @@
   }
 
   function openUserProfileInfo() {
-    openToast('Akun Aktif: Barbara Wijaya (Owner Pasar) • Hak Akses: Penuh (Read-Only Audit & Keuangan)');
+    if (typeof openRoleSwitcherModal === 'function') {
+      openRoleSwitcherModal();
+    }
   }
 
   // ============================================================

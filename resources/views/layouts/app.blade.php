@@ -254,8 +254,10 @@
           <!-- MAIN DYNAMIC CONTENT AREA -->
           @yield('content')
 
-          <!-- RIGHT SIDE PANEL -->
-          @include('partials.right-panel')
+          @if (!View::hasSection('hide_right_panel'))
+            <!-- RIGHT SIDE PANEL -->
+            @include('partials.right-panel')
+          @endif
 
         </div>
       </div>

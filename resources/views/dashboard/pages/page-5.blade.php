@@ -17,9 +17,15 @@
         <h3 class="font-bold text-sm mt-2">Pengiriman 450 Unit Monitor LED ke Cabang Surabaya</h3>
         <p class="text-xs text-textMuted mt-0.5">Ekspedisi: Siba Cargo • Sopir: Pak Wahyu • Siap di Gate B2</p>
       </div>
-      <button onclick="this.innerText='✓ Disetujui'; this.className='bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl pointer-events-none'; openToast('Surat Jalan #SJ-2026-891 berhasil ditandatangani secara digital!')" class="bg-sidebar hover:bg-sidebarDark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shrink-0">
-        Setujui & Cetak
-      </button>
+      @isReadOnly
+        <button onclick="openToast('Akses Read-Only: Role Owner hanya bertindak sebagai pengawas dan tidak dapat memvalidasi dokumen operasional.')" class="bg-panelBg border border-[#E6E4F0] text-textMuted text-xs font-bold px-4 py-2.5 rounded-xl cursor-not-allowed shrink-0">
+          Mode Read-Only
+        </button>
+      @else
+        <button onclick="this.innerText='✓ Disetujui'; this.className='bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl pointer-events-none'; openToast('Surat Jalan #SJ-2026-891 berhasil ditandatangani secara digital!')" class="bg-sidebar hover:bg-sidebarDark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shrink-0">
+          Setujui & Cetak
+        </button>
+      @endisReadOnly
     </div>
 
     <div class="bg-white p-5 rounded-[22px] border border-[#ECEBF4] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -28,9 +34,15 @@
         <h3 class="font-bold text-sm mt-2">Laporan Kemasan Penyok (12 Box Susu UHT)</h3>
         <p class="text-xs text-textMuted mt-0.5">Diajukan oleh Tim QC Inbound • Menunggu isolasi ke Zona Karantina</p>
       </div>
-      <button onclick="this.innerText='✓ Terkonfirmasi'; this.className='bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl pointer-events-none'; openToast('Barang retur dipindahkan ke Rak Karantina!')" class="bg-brandCoral hover:opacity-90 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shrink-0">
-        Konfirmasi Isolasi
-      </button>
+      @isReadOnly
+        <button onclick="openToast('Akses Read-Only: Role Owner hanya bertindak sebagai pengawas dan tidak dapat mengubah status karantina.')" class="bg-panelBg border border-[#E6E4F0] text-textMuted text-xs font-bold px-4 py-2.5 rounded-xl cursor-not-allowed shrink-0">
+          Mode Read-Only
+        </button>
+      @else
+        <button onclick="this.innerText='✓ Terkonfirmasi'; this.className='bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl pointer-events-none'; openToast('Barang retur dipindahkan ke Rak Karantina!')" class="bg-brandCoral hover:opacity-90 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shrink-0">
+          Konfirmasi Isolasi
+        </button>
+      @endisReadOnly
     </div>
   </div>
 </div>

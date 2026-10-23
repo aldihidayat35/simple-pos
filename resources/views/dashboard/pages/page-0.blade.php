@@ -7,12 +7,25 @@
   <!-- 1. SOFT SOLID ORANGE HERO BANNER (Mobile & Tablet Priority) -->
   <div class="relative bg-brandOrange rounded-[26px] p-6 sm:p-8 text-white overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
     <div class="relative z-10 max-w-xl">
-      <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full text-xs font-semibold mb-3">
-        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-        <span data-i18n="hero_live_badge">Sistem Operasional Pasar Terpadu • Real-Time</span>
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+          <span data-i18n="hero_live_badge">Sistem Operasional Pasar Terpadu • Real-Time</span>
+        </div>
+        @if(auth()->check())
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide {{ auth()->user()->getRoleBadgeClass() }}">
+            {{ auth()->user()->getRoleLabel() }}
+          </span>
+          @if(auth()->user()->isReadOnly())
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-amber-500 text-white flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              Read-Only
+            </span>
+          @endif
+        @endif
       </div>
-      <h1 class="font-display text-2xl sm:text-[32px] font-bold tracking-tight leading-tight" data-i18n="hero_welcome">
-        Halo, Barbara!
+      <h1 class="font-display text-2xl sm:text-[32px] font-bold tracking-tight leading-tight">
+        Halo, {{ auth()->user()->name ?? 'Barbara' }}!
       </h1>
       <p class="text-white/95 text-xs sm:text-sm mt-1.5 font-medium leading-relaxed" data-i18n="hero_subtitle">
         Ekosistem Terpadu Rantai Pasok Gudang Pusat, Penjualan Ritel Toko, dan Kemitraan Grosir B2B
@@ -51,10 +64,17 @@
       </button>
 
       <div class="flex gap-2 w-full">
-        <button onclick="openEmergencyModal()" class="min-h-[48px] flex-1 px-4 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95">
-          <span class="w-2 h-2 rounded-full bg-moveOrange"></span>
-          <span data-i18n="btn_input_emergency">+ Stok Emergency</span>
-        </button>
+        @isReadOnly
+          <button onclick="openToast('Akses Terkunci: Mode Owner hanya untuk pengawasan (Read-Only) dan dilarang mengubah stok operasional.')" class="min-h-[48px] flex-1 px-4 py-2.5 rounded-xl bg-white/10 text-white/70 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed" title="Mode Pengawas (Hanya Baca)">
+            <svg class="w-3.5 h-3.5 text-amber-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>Read-Only</span>
+          </button>
+        @else
+          <button onclick="openEmergencyModal()" class="min-h-[48px] flex-1 px-4 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95">
+            <span class="w-2 h-2 rounded-full bg-moveOrange"></span>
+            <span data-i18n="btn_input_emergency">+ Stok Emergency</span>
+          </button>
+        @endisReadOnly
         <button onclick="filterMovementStream('red')" class="min-h-[48px] px-3.5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95" title="Filter Anomali">
           <span class="w-2 h-2 rounded-full bg-moveRed animate-pulse"></span>
           <span data-i18n="btn_opname_check">Anomali</span>
@@ -85,7 +105,7 @@
         <p class="text-[11px] text-textMuted mt-1" data-i18n="stat_omzet_sub">Toko: Rp 18.5M • B2B: Rp 29.7M</p>
       </div>
 
-      <!-- Card 2: Estimasi Laba Kotor -->
+      <!-- Card 2: Estimasi Laba Kotor (HPP & Profit Protected) -->
       <div class="bg-white rounded-[22px] p-5 border border-[#ECEBF4] hover:bg-panelBg/40 transition duration-200">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-bold uppercase tracking-wider text-textMuted" data-i18n="stat_profit_est">Laba Kotor</span>
@@ -95,11 +115,21 @@
             </svg>
           </div>
         </div>
-        <p class="font-display text-xl sm:text-2xl font-extrabold text-moveGreen mt-3">Rp 7.820.000</p>
-        <p class="text-[11px] text-textMuted mt-1" data-i18n="stat_profit_sub">Margin Real-Time: +16.2%</p>
+        @canViewProfit
+          <p class="font-display text-xl sm:text-2xl font-extrabold text-moveGreen mt-3">Rp 7.820.000</p>
+          <p class="text-[11px] text-textMuted mt-1" data-i18n="stat_profit_sub">Margin Real-Time: +16.2%</p>
+        @else
+          <div class="mt-3 flex items-center gap-1.5 py-1">
+            <svg class="w-4 h-4 text-textMuted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span class="font-mono text-sm tracking-widest font-bold text-textMuted">Rp ••••••••</span>
+          </div>
+          <p class="text-[10px] text-rose-600 font-bold mt-1">Dirahasiakan (Akses Dibatasi)</p>
+        @endcanViewProfit
       </div>
 
-      <!-- Card 3: Nilai Aset Stok -->
+      <!-- Card 3: Nilai Aset Stok (HPP Protected) -->
       <div class="bg-white rounded-[22px] p-5 border border-[#ECEBF4] hover:bg-panelBg/40 transition duration-200">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-bold uppercase tracking-wider text-textMuted" data-i18n="stat_stock_asset">Nilai Aset Stok</span>
@@ -109,8 +139,18 @@
             </svg>
           </div>
         </div>
-        <p class="font-display text-xl sm:text-2xl font-extrabold text-textMain mt-3">Rp 482.900.000</p>
-        <p class="text-[11px] text-textMuted mt-1" data-i18n="stat_stock_sub">Gudang 75% • Toko 25%</p>
+        @canViewHpp
+          <p class="font-display text-xl sm:text-2xl font-extrabold text-textMain mt-3">Rp 482.900.000</p>
+          <p class="text-[11px] text-textMuted mt-1" data-i18n="stat_stock_sub">Gudang 75% • Toko 25%</p>
+        @else
+          <div class="mt-3 flex items-center gap-1.5 py-1">
+            <svg class="w-4 h-4 text-textMuted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span class="font-mono text-sm tracking-widest font-bold text-textMuted">Rp ••••••••</span>
+          </div>
+          <p class="text-[10px] text-rose-600 font-bold mt-1">Dirahasiakan (Akses Dibatasi)</p>
+        @endcanViewHpp
       </div>
 
       <!-- Card 4: Piutang B2B Berjalan -->
